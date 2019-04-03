@@ -1,1 +1,1 @@
-dir(str)
+print("Hello!")
