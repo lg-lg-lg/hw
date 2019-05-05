@@ -162,7 +162,7 @@ def add_keytags():
                                             tfile.close()
                                             exit()
 
-                                if tfile.write(astring[:-1]) > 0:
+                                if tfile.write(astring) > 0:
                                     print("Ok, new keytags is added")
 
                         except FileNotFoundError:
