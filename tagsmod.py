@@ -40,7 +40,7 @@ def repl(text):
 # Concatenate word + signs
 
 def words_gen(*words):
-    signs = r".,:;-?!()[]\' "
+    signs = r".,:;-?!()[]\'’ "
 
     genwords = []
     for i in words:
@@ -119,7 +119,7 @@ def add_keytags():
                 for tg in tag_abbr:
                     if new_keytags_input.find(tg) > anchorpoint:
                         if tg == "dev_tags":
-                            abbr_tags += "<tag>dev</tag><tag>программирование</tag>"
+                            abbr_tags += "<tag>dev</tag><tag>программирование</tag><tag>разработка</tag>"
                         if tg == "des_tags":
                             abbr_tags += "<tag>design</tag><tag>дизайн</tag>"
                         if tg == "traff_tags":
