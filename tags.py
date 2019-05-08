@@ -15,26 +15,9 @@ try:
 		key_tags = {}
 		for line in tfile:
 			if line != "":
-				kwd = line[line.find("<keyword>")+len("<keyword>"):line.find("</keyword>")]  # keyword<tag>tag1</tag>
-				keyword = kwd[0:kwd.find("<tag>")]  # cut keyword
-
-				shiftpos_opentag = kwd.find("<tag>")
-				shiftpos_closetag = kwd.find("</tag>")
-
-				tags = ''
-				for counter in range(kwd.count("<tag>")):
-
-					# one tag
-					tag = kwd[kwd.find("<tag>", shiftpos_opentag)+len("<tag>"):kwd.find("</tag>", shiftpos_closetag)]
-
-					# pack tags in string
-					tags += str(tag) + ","
-
-					# shift position for 'find', search next tag
-					shiftpos_opentag = kwd.find("<tag>", shiftpos_opentag+len("<tag>") + len("<tag>"))
-					shiftpos_closetag = kwd.find("</tag>", shiftpos_closetag + len("</tag>"))
-
-				key_tags.setdefault(keyword, tags[:-1])		# construct dict... [word:'tag1,tag2,tag3'...]
+				keyword = line[0:line.find(":")]  # cut keyword
+				tags = line[line.find(":")+1:]
+				key_tags.setdefault(keyword, tags[:-1])		# construct dict... ['word':'tag1,tag2,tag3'...]
 
 except FileNotFoundError:
 	print("File 'tagsfile' not exist.")
@@ -60,10 +43,10 @@ def search_in_fulltext(word):
 
 		return False
 
-	if "<advsearch>" in word:
-		word = word.replace("<advsearch>", "")
+	if "+" in word:
+		word = word.replace("+", "")
 		if find_word():
-			return key_tags.get(word+"<advsearch>")
+			return key_tags.get(word+"+")
 
 	elif fullText.lower().find(word) >= 0:
 		return key_tags.get(word)
@@ -152,7 +135,7 @@ except FileNotFoundError:
 # --- Find keywords in text ---
 keywords = list(map(search_in_fulltext, key_tags))  	  # duplicated tags in tuples  		[a,b,c] [] [a,b,d,e]
 keywords = list(filter(None, keywords))					  # filtering					 		[a,b,c] [a,b,d,e]
-keywords = ",".join(keywords).replace("<advsearch>", "")  # convert all to monostring and clean  "a,b,c,a,b,d,e"
+keywords = ",".join(keywords).replace("+", "")  		  # convert all to monostring and clean  "a,b,c,a,b,d,e"
 keywords = list(set(keywords.split(",")))				  # split snd deduplicate		  		"a","b","c","d","e"
 
 finalText = finalText + '#' + ' #'.join(keywords)

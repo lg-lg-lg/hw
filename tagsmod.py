@@ -108,7 +108,7 @@ def add_keytags():
 
                 # 3. advanced search?
                 if new_keytags_input.find("+") > anchorpoint:
-                    adv_search = "<advsearch>"
+                    adv_search = "+"
                     anchorpoint = new_keytags_input.find("+")
                 else:
                     adv_search = ""
@@ -119,15 +119,15 @@ def add_keytags():
                 for tg in tag_abbr:
                     if new_keytags_input.find(tg) > anchorpoint:
                         if tg == "dev_tags":
-                            abbr_tags += "<tag>dev</tag><tag>программирование</tag><tag>разработка</tag>"
+                            abbr_tags += "dev,программирование,разработка"
                         if tg == "des_tags":
-                            abbr_tags += "<tag>design</tag><tag>дизайн</tag>"
+                            abbr_tags += "design,дизайн"
                         if tg == "traff_tags":
-                            abbr_tags += "<tag>трафик</tag><tag>арбитраж</tag>"
+                            abbr_tags += "трафик,арбитраж"
                         if tg == "office_tags":
-                            abbr_tags += "<tag>office</tag><tag>офис</tag>"
+                            abbr_tags += "office,офис"
                         if tg == "webdes_tags":
-                            abbr_tags += "<tag>webdesign</tag><tag>вебдизайн</tag><tag>вэбдизайн</tag>"
+                            abbr_tags += "webdesign,вебдизайн,вэбдизайн"
                         anchorpoint += len(tg) + 1   # abbr_tags + space
 
                 # 5. other tags
@@ -136,17 +136,19 @@ def add_keytags():
                     otrtags = new_keytags_input[anchorpoint+1:].split(" ")
                     otrtags = list(filter(None, otrtags))
                     for ot in otrtags:
-                        other_tags += "<tag>" + re.sub("[^a-z0-9"+alphabetRusLower+"]", "", ot) + "</tag>"
+                        other_tags += "," + re.sub("[^a-z0-9"+alphabetRusLower+"]", "", ot)
+                    if abbr_tags == "":
+                        other_tags = other_tags[1:]
 
                 # 6. assemble string
                 astring = ""
                 for kwd in keywords:
-                    astring += "<keyword>" + kwd + adv_search + abbr_tags + other_tags + "</keyword>\n"
+                    astring += kwd + adv_search + ":" + abbr_tags + other_tags + "\n"
 
                 # confirm data...
                 try:
                     inp = input("\nAre you want to add\n\n{0}\nto the tags file? [y/n]".format(astring))
-                    inp = re.sub("^yY", "", inp)
+                    inp = re.sub("^yYнН", "", inp)
                     if inp != '':
 
                         # ...and check of existence
@@ -154,11 +156,11 @@ def add_keytags():
                             with open(r"c:\Projects\hw\tagsfile", "a+", encoding="utf-8") as tfile:
                                 for line in tfile:
                                     if line != "":
-                                        keyw = line[0:line.find("<tag>")]
-                                        keyw = keyw.replace("<advsearch>", "")
+                                        keyw = line[0:line.find(":")]
+                                        keyw = keyw.replace("+", "")
 
                                         if astring.find(keyw):
-                                            print("Sorry, this tag '{0}' yet exist.".format(keyw.replace("<keyword>", "")))
+                                            print("Sorry, this tag '{0}' yet exist.".format(keyw))
                                             tfile.close()
                                             exit()
 
