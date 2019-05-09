@@ -15,7 +15,7 @@ try:
 		key_tags = {}
 		for line in tfile:
 			if line != "":
-				keyword = line[0:line.find(":")]  # cut keyword
+				keyword = line[0:line.find(":")]  			# cut keyword
 				tags = line[line.find(":")+1:]
 				key_tags.setdefault(keyword, tags[:-1])		# construct dict... ['word':'tag1,tag2,tag3'...]
 
@@ -54,10 +54,12 @@ def search_in_fulltext(word):
 
 # -----------------------------------------------
 
-# --- Get "tags.py" argument (full path to work subfolder) ---
+# --- Transfer "tags.py" argument (full path to work subfolder) ---
 subFolder = ""
 if len(sys.argv) == 2:
 	subFolder = tagsmod.clean(sys.argv[1])
+	subFolder = re.sub(r"[^0-9a-zA-Z -абвгдеёжзийклмнопрстуфхцчшщъьыэюя"
+					   r"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЫЭЮЯ\\\/:,\\(\\)\\-\\.\\+_]", "", subFolder)
 	subFolder = subFolder[:-1]
 else:
 	exit()
@@ -89,27 +91,27 @@ finalText = finalText.replace(header, "**" + header + "**", 1)
 
 # --- Download (Size) - Compress to X times ---
 rarSize = 0
-for file in os.listdir(subFolder):				 # count the Final RAR Archive(s) size
+for file in os.listdir(subFolder):				 		 # count the Final RAR Archive(s) size
 	extension = os.path.splitext(file)[1][1:].strip()
 	if extension == "rar":
 		rarSize += os.path.getsize(subFolder+"\\"+file)	 # size in bytes
 
-rarSize /= (1024 * 1024)				 		 # size in megabytes
+rarSize /= (1024 * 1024)				 		 		 # size in megabytes
 
 
 # --- Try open "размер.txt" file ---
 try:
 	fileName = subFolder + r"\размер.txt"
 	with open(fileName, "r", encoding="UTF-8") as txtFile:
-		originalSize = txtFile.read()					 # get original size from "размер.txt"
+		originalSize = txtFile.read()				   # get original size from "размер.txt"
 		if originalSize.find(r"https://") == 0:
 			url = re.sub("[^a-zA-Z0-9\\-_:%./]", "", originalSize)
 			req = requests.get(url)
-			elemList = req.text.split('"size": ')        # find first '"size":' in page code - this is preposition of Size
-			f = elemList[1].find(",")					 # find ',' in received substring - this is postposition of Size
+			elemList = req.text.split('"size": ')      # find first '"size":' in page code - this is preposition of Size
+			f = elemList[1].find(",")				   # find ',' in received substring - this is postposition of Size
 			originalSize = int(int(elemList[1][:f]) / (1024*1024))	 # delete postposition, receive Size in megabytes
 		else:
-			originalSize = int(re.sub("[^0-9]", "", originalSize))	  # Size in megabytes
+			originalSize = int(re.sub("[^0-9]", "", originalSize))	 # Size in megabytes
 
 	compress_ratio = originalSize / rarSize
 

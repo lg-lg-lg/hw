@@ -7,27 +7,13 @@ alphabetRus = "абвгдеёжзийклмнопрстуфхцчшщъьыэю�
 alphabetRusLower = "абвгдеёжзийклмнопрстуфхцчшщъьыэюя"
 
 
-def clean(prm, mode=()):
-    if mode:
-        mode[0].lower()
-    if mode == "lite":
-        strng = r"^|\n|\r|$"
-    elif mode == "strong":
-        strng = r"^\s+|\n|\r|[^0-9a-zA-Z -" + alphabetRus + r"\"]|\s+$"
-    elif mode == "strong_eng":
-        strng = r"^\s+|\n|\r|[^0-9 a-zA-Z_]|\s+$"
-    elif mode == "path":
-        strng = r"^\s+|\n|\r|[^0-9a-zA-Z -" + alphabetRus + r"\\\/:\\(\\).]|\s+$"
-    else:
-        strng = r"^\s+|\n|\r|\s+$"
-
-    prm = re.sub(strng, '', prm).lower()
-    prm = re.sub(r"\s+", " ", prm).lower()
-    prm = re.sub(r"^\s+|\s+$", '', prm).lower()
-
+# Delete all Spaces, "End of Line" sign, "Return" sign
+def clean(prm):
+    prm = re.sub(r"^\s+|\n|\s+|\r|\s+$", '', prm)
     return prm
 
 
+# Replace special symbols
 def repl(text):
     text = text.replace("▪", "-")
     text = text.replace("•", "-")
@@ -38,21 +24,18 @@ def repl(text):
 # Generate Word's variants
 # word = "api" => " api", "api ", " api ", ".api", "api."...
 # Concatenate word + signs
-
-def words_gen(*words):
+def words_gen(word):
     signs = r".,:;-?!()[]\'’ "
-
     genwords = []
-    for i in words:
-        for sr in signs:
-            for sl in signs:
-                genwords.extend([sl+i+sr])
-                genwords.extend([i + sr])
-                genwords.extend([sl + i])
+    for sr in signs:
+        for sl in signs:
+            genwords.extend([sl + word + sr])
+            genwords.extend([word + sr])
+            genwords.extend([sl + word])
     return list(set(genwords))  # deduplicate... just in case
 
 
-# --- Write <keyword>word[<advsearch>]<tag>tag1</tag></keyword> into "tagsfile" ---
+# --- Write "word[+]:tag1,tag2..." into "tagsfile" ---
 def add_keytags():
     try:
         print("\nSample1:  keyword = [+] tag1 tag2...tagN")
@@ -75,7 +58,7 @@ def add_keytags():
         new_keytags_input = input().lower()
         if new_keytags_input != "":
             new_keytags_input = clean(new_keytags_input)
-            new_keytags_input = re.sub("[^-=_ a-zA-Z0-9\\+\\(\\)"+alphabetRus+"]", "", new_keytags_input)
+            new_keytags_input = re.sub("[^-=_ a-z0-9\\+\\(\\)"+alphabetRusLower+"]", "", new_keytags_input)
             if new_keytags_input.find("="):
 
                 anchorpoint = new_keytags_input.find("=")
@@ -128,7 +111,7 @@ def add_keytags():
                             abbr_tags += "office,офис"
                         if tg == "webdes_tags":
                             abbr_tags += "webdesign,вебдизайн,вэбдизайн"
-                        anchorpoint += len(tg) + 1   # abbr_tags + space
+                        anchorpoint += len(tg) + 1                         # abbr_tags + space
 
                 # 5. other tags
                 other_tags = ""
@@ -138,7 +121,7 @@ def add_keytags():
                     for ot in otrtags:
                         other_tags += "," + re.sub("[^a-z0-9"+alphabetRusLower+"]", "", ot)
                     if abbr_tags == "":
-                        other_tags = other_tags[1:]
+                        other_tags = other_tags[1:]                        # delete pre-space
 
                 # 6. assemble string
                 astring = ""
