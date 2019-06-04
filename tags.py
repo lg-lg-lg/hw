@@ -16,8 +16,8 @@ try:
 		for line in tfile:
 			if line != "":
 				keyword = line[0:line.find(":")]  			# cut keyword
-				tags = line[line.find(":")+1:]
-				key_tags.setdefault(keyword, tags[:-1])		# construct dict... ['word':'tag1,tag2,tag3'...]
+				tags = line[line.find(":")+1:]				# cut tags
+				key_tags.setdefault(keyword, tags[:-1])		# construct dict... ['word':'tag1,tag2,...,tagN']
 
 except FileNotFoundError:
 	print("File 'tagsfile' not exist.")
@@ -29,7 +29,7 @@ def search_in_fulltext(word):
 
 	def find_word():
 
-		# find "text" in "sample text," and do " text,"
+		# find "text" in "sample text," and make " text,"
 		def expand_word():
 			if 0 < shiftpos < len(fullText) - 2:
 				return fullText[shiftpos - 1:shiftpos + len(word) + 1].lower()
