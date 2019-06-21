@@ -1,10 +1,8 @@
 import locale
 import re
+from globals import *
 
 locale.setlocale(locale.LC_ALL, "ru-ru.UTF-8")
-
-alphabetRus = "абвгдеёжзийклмнопрстуфхцчшщъьыэюяАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЫЭЮЯ"
-alphabetRusLower = "абвгдеёжзийклмнопрстуфхцчшщъьыэюя"
 
 
 # Delete all Spaces, "End of Line" sign, "Return" sign
@@ -29,31 +27,31 @@ def words_gen(word):
     genwords = []
     for sr in signs:
         for sl in signs:
-            genwords.extend([sl + word + sr])
-            genwords.extend([word + sr])
-            genwords.extend([sl + word])
-    return list(set(genwords))  # deduplicate... just in case
+            genwords.extend([sl + word + sr, word + sr, sl + word])
+    return list(set(genwords))
 
 
 # --- Write "word[+]:tag1,tag2..." into "tagsfile" ---
 def add_keytags():
     try:
-        print("\nSample1:  keyword = [+] tag1 tag2...tagN")
-        print("Sample2:  keyword1 (new keyword2)...keywordN = [+] tags_abbr tag1 tag2")
-        print("\nkeyword1 (new keyword2)...keywordN - sequence of keywords")
-        print("(new keyword2) - one keyword")
-        print("'=' - separator")
-        print("[+] - Advanced search (optional parameter)")
-        print("\ntags_abbr - Tag abbreviations:")
-        print("dev_tags - development")
-        print("des_tags - design")
-        print("biz_tags - business")
-        print("traff_tags - traffic")
-        print("trav_tags - travels, rest")
-        print("office_tags - office")
-        print("webdes_tags - web-design")
-        print("\nSample: бот (два бота) боту ботом (о боте) = + dev_tags боты")
-        print("Sample: дизайн = des_tags")
+        print(
+              "\nSample1:  keyword = [+] tag1 tag2...tagN\n"
+              "Sample2:  keyword1 (new keyword2)...keywordN = [+] tags_abbr tag1 tag2\n"
+              "\nkeyword1 (new keyword2)...keywordN - sequence of keywords\n"
+              "(new keyword2) - one keyword\n"
+              "'=' - separator\n"
+              "[+] - Advanced search (optional parameter)\n"
+              "\ntags_abbr - Tag abbreviations:\n"
+              "dev_tags - development\n"
+              "des_tags - design\n"
+              "biz_tags - business\n"
+              "traff_tags - traffic\n"
+              "trav_tags - travels, rest\n"
+              "office_tags - office\n"
+              "webdes_tags - web-design\n"
+              "\nSample: бот (два бота) боту ботом (о боте) = + dev_tags боты\n"
+              "Sample: дизайн = des_tags\n"
+        )
 
         new_keytags_input = input().lower()
         if new_keytags_input != "":

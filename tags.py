@@ -1,5 +1,5 @@
 import locale
-import tagsmod
+import tagsmods.tagsmod as tagsmod
 import os
 import re
 import sys
@@ -7,6 +7,44 @@ import requests
 
 
 locale.setlocale(locale.LC_ALL, "ru-ru.UTF-8")
+
+
+# --- Search keyword in text ---
+def search_in_fulltext(word):
+
+	fullTextLower = fullText.lower()
+
+	def find_word():
+
+		# find "text" in "sample text," and make " text,"
+		def expand_word():
+			if 0 < shiftpos < len(fullTextLower) - 2:
+				return fullTextLower[shiftpos - 1:shiftpos + len(word) + 1]
+
+		shiftpos = fullTextLower.find(word)
+		for counter in range(fullTextLower.count(word)):
+			print(expand_word())
+			print(tagsmod.words_gen(word))
+			if expand_word() not in tagsmod.words_gen(word):
+				shiftpos = fullTextLower.find(word, shiftpos + len(word))
+			else:
+				return True
+
+		return False
+
+	if "+" in word:
+		word = word.replace("+", "")
+		if find_word():
+			return key_tags.get(word+"+")
+
+	elif fullTextLower.find(word) >= 0:
+		return key_tags.get(word)
+
+
+# -----------------------------------------------
+
+if __name__ != "__main__":
+	exit()
 
 
 # --- Try open "tagsfile" file ---
@@ -24,42 +62,11 @@ except FileNotFoundError:
 	exit()
 
 
-# --- Search keyword in text ---
-def search_in_fulltext(word):
-
-	def find_word():
-
-		# find "text" in "sample text," and make " text,"
-		def expand_word():
-			if 0 < shiftpos < len(fullText) - 2:
-				return fullText[shiftpos - 1:shiftpos + len(word) + 1].lower()
-
-		shiftpos = fullText.lower().find(word)
-		for counter in range(fullText.lower().count(word)):
-			if expand_word() not in tagsmod.words_gen(word):
-				shiftpos = fullText.lower().find(word, shiftpos + len(word))
-			else:
-				return True
-
-		return False
-
-	if "+" in word:
-		word = word.replace("+", "")
-		if find_word():
-			return key_tags.get(word+"+")
-
-	elif fullText.lower().find(word) >= 0:
-		return key_tags.get(word)
-
-
-# -----------------------------------------------
-
 # --- Transfer "tags.py" argument (full path to work subfolder) ---
 subFolder = ""
 if len(sys.argv) == 2:
-	subFolder = tagsmod.clean(sys.argv[1])
-	subFolder = re.sub(r"[^0-9a-zA-Z -абвгдеёжзийклмнопрстуфхцчшщъьыэюя"
-					   r"АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЫЭЮЯ\\\/:,\\(\\)\\-\\.\\+_]", "", subFolder)
+	subFolder = re.sub(r"^\s+|\n|\r|\s+$", '', sys.argv[1])
+	subFolder = re.sub(r"[^0-9a-zA-Z -\\\/:,\\(\\)\\-\\.\\+_" + tagsmod.alphabetRus + "]", "", subFolder)
 	subFolder = subFolder[:-1]
 else:
 	exit()
@@ -73,7 +80,7 @@ try:
 		if fullTextUntouched.find("**") == 0:
 			exit()
 		fullTextUntouched = tagsmod.repl(fullTextUntouched)
-		fullText = tagsmod.clean(fullTextUntouched)
+		fullText = re.sub(r"^\s+|\n|\r|\s+$", '', fullTextUntouched)
 
 except FileNotFoundError:
 	print("File 'tg-message.txt' not exist.")
@@ -99,11 +106,11 @@ for file in os.listdir(subFolder):				 		 # count the Final RAR Archive(s) size
 rarSize /= (1024 * 1024)				 		 		 # size in megabytes
 
 
-# --- Try open "размер.txt" file ---
+# --- Try open "size.txt" file ---
 try:
-	fileName = subFolder + r"\размер.txt"
+	fileName = subFolder + r"\size.txt"
 	with open(fileName, "r", encoding="UTF-8") as txtFile:
-		originalSize = txtFile.read()				   # get original size from "размер.txt"
+		originalSize = txtFile.read()				   # get original size from "size.txt"
 		if originalSize.find(r"https://") == 0:
 			url = re.sub("[^a-zA-Z0-9\\-_:%./]", "", originalSize)
 			req = requests.get(url)
@@ -129,7 +136,7 @@ try:
 	finalText += "Скачать ({size}) - Сжато в {c_ratio:.2f} раза\n\n".format(size=rarSize, bytes=bytes,
 																			c_ratio=compress_ratio)
 except FileNotFoundError:
-	print("File 'размер.txt' not exist.")
+	print("File 'size.txt' not exist.")
 	exit()
 
 
@@ -140,7 +147,7 @@ keywords = list(filter(None, keywords))					  # filtering					 		[a,b,c] [a,b,d,
 keywords = ",".join(keywords).replace("+", "")  		  # convert all to monostring and clean  "a,b,c,a,b,d,e"
 keywords = list(set(keywords.split(",")))				  # split snd deduplicate		  		"a","b","c","d","e"
 
-finalText = finalText + '#' + ' #'.join(keywords)
+finalText += '#' + ' #'.join(keywords)
 
 
 # --- Subscribe message ---
