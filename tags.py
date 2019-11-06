@@ -1,5 +1,5 @@
 import locale
-import tagsmods.tagsmod as tagsmod
+from tagmods import tagsmod
 import os
 import re
 import sys

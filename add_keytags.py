@@ -1,3 +1,3 @@
-import tagsmods.tagsmod as tagsmod
+from tagsmods import tagsmod
 
 tagsmod.add_keytags()

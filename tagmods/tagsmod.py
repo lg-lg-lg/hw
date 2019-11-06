@@ -1,6 +1,6 @@
 import locale
 import re
-from globals import *
+from .globals import *
 
 locale.setlocale(locale.LC_ALL, "ru-ru.UTF-8")
 
@@ -23,7 +23,7 @@ def repl(text):
 # word = "api" => " api", "api ", " api ", ".api", "api."...
 # Concatenate word + signs
 def words_gen(word):
-    signs = r".,:;-?!()[]\'’ "
+    signs = r".,:;-?!()[]\'вЂ™ "
     genwords = []
     for sr in signs:
         for sl in signs:
@@ -49,8 +49,8 @@ def add_keytags():
               "trav_tags - travels, rest\n"
               "office_tags - office\n"
               "webdes_tags - web-design\n"
-              "\nSample: бот (два бота) боту ботом (о боте) = + dev_tags боты\n"
-              "Sample: дизайн = des_tags\n"
+              "\nSample: Р±РѕС‚ (РґРІР° Р±РѕС‚Р°) Р±РѕС‚Сѓ Р±РѕС‚РѕРј (Рѕ Р±РѕС‚Рµ) = + dev_tags Р±РѕС‚С‹\n"
+              "Sample: РґРёР·Р°Р№РЅ = des_tags\n"
         )
 
         new_keytags_input = input().lower()
@@ -100,15 +100,15 @@ def add_keytags():
                 for tg in tag_abbr:
                     if new_keytags_input.find(tg) > anchorpoint:
                         if tg == "dev_tags":
-                            abbr_tags += "dev,программирование,разработка"
+                            abbr_tags += "dev,РїСЂРѕРіСЂР°РјРјРёСЂРѕРІР°РЅРёРµ,СЂР°Р·СЂР°Р±РѕС‚РєР°"
                         if tg == "des_tags":
-                            abbr_tags += "design,дизайн"
+                            abbr_tags += "design,РґРёР·Р°Р№РЅ"
                         if tg == "traff_tags":
-                            abbr_tags += "трафик,арбитраж"
+                            abbr_tags += "С‚СЂР°С„РёРє,Р°СЂР±РёС‚СЂР°Р¶"
                         if tg == "office_tags":
-                            abbr_tags += "office,офис"
+                            abbr_tags += "office,РѕС„РёСЃ"
                         if tg == "webdes_tags":
-                            abbr_tags += "webdesign,вебдизайн,вэбдизайн"
+                            abbr_tags += "webdesign,РІРµР±РґРёР·Р°Р№РЅ,РІСЌР±РґРёР·Р°Р№РЅ"
                         anchorpoint += len(tg) + 1                         # abbr_tags + space
 
                 # 5. other tags
@@ -129,7 +129,7 @@ def add_keytags():
                 # confirm data...
                 try:
                     inp = input("\nAre you want to add\n\n{0}\nto the tags file? [y/n]".format(astring))
-                    inp = re.sub("^yYнН", "", inp)
+                    inp = re.sub("^yYРЅРќ", "", inp)
                     if inp != '':
 
                         # ...and check of existence
